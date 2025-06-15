@@ -1,0 +1,28 @@
+# Use the Alpine Linux base image
+FROM alpine:latest
+
+# Install OpenSSH and create necessary directories
+RUN apk --no-cache add openssh && \
+    mkdir -p /var/www/html
+
+# Set the root user's password from the ROOT_PASSWORD environment variable
+ENV ROOT_PASSWORD
+RUN echo "root:${ROOT_PASSWORD}" | chpasswd
+
+# Generate SSH host keys
+RUN ssh-keygen -A
+
+# Configure SSH for SFTP and limit access to /var/www/html
+RUN echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config && \
+    echo 'AllowTcpForwarding no' >> /etc/ssh/sshd_config && \
+    echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config && \
+    echo 'Subsystem sftp internal-sftp' >> /etc/ssh/sshd_config && \
+    echo 'Match User root' >> /etc/ssh/sshd_config && \
+    echo '  ChrootDirectory /var/www/html' >> /etc/ssh/sshd_config && \
+    echo '  ForceCommand internal-sftp' >> /etc/ssh/sshd_config
+
+# Expose the SSH port
+EXPOSE 22
+
+# Start the SSH server
+CMD ["/usr/sbin/sshd", "-D"]
