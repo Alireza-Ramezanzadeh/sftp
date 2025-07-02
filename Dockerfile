@@ -3,13 +3,14 @@ FROM alpine:latest
 
 # Install OpenSSH and create necessary directories
 RUN apk --no-cache add openssh && \
-    delgroup www-data && \
-    mkdir -p /var/www/html && \
-    addgroup -g 33 www-data && \
-    adduser -u 33 -G www-data -h /var/www/html -D www-data && \
-    chown -R www-data:www-data /var/www/html && \
-    chown root. /var/www/html && \
-    chown root. /var/www
+   delgroup www-data && \
+   mkdir -p /var/www/html && \
+   addgroup -g 33 www-data && \
+   adduser -u 33 -G www-data -h /var/www/html -D www-data && \
+   chown root:root /var/www && \
+    chown root:root /var/www/html && \
+    mkdir -p /var/www/html/data && \
+    chown www-data:www-data /var/www/html/data
 
 # Copy the custom entry point script
 COPY perm.sh /perm.sh
