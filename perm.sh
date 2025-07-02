@@ -18,15 +18,17 @@ rm -rf /var/www
 ln -s /sftp/www-data /var/www
 
 {
+
   echo 'PasswordAuthentication yes'
   echo 'AllowTcpForwarding no'
   echo 'PermitTunnel no'
   echo 'X11Forwarding no'
   echo ''
   echo 'Match User www-data'
-  echo '  ChrootDirectory /sftp/%u'
+  echo '  ChrootDirectory /var/www'
   echo '  ForceCommand internal-sftp'
   echo '  AllowAgentForwarding no'
+
 } >> /etc/ssh/sshd_config
 
 exec /usr/sbin/sshd -D -e
