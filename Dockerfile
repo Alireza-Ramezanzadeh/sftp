@@ -3,23 +3,22 @@ FROM alpine:latest
 
 # Install OpenSSH and create necessary directories
 RUN apk --no-cache add openssh && \
-   delgroup www-data && \
-   mkdir -p /var/www/html && \
-   addgroup -g 33 www-data && \
-   adduser -u 33 -G www-data -h /var/www/html -D www-data && \
-   chown root:root /var/www && \
-    chown root:root /var/www/html && \
-    mkdir -p /var/www/html/data && \
-    chown www-data:www-data /var/www/html/data
+    delgroup www-data && \
+    # mkdir -p /var/www/html && \
+    addgroup -g 33 www-data && \
+    adduser -u 33 -G www-data -h /home/www-data -D www-data
+    # chown -R www-data:www-data /var/www/html && \
+    # chown root. /var/www/html && \
+    # chown root. /var/www
 
 # Copy the custom entry point script
-COPY perm.sh /perm.sh
+COPY entrypoint.sh /entrypoint.sh
 
 # Generate SSH host keys
 RUN ssh-keygen -A
 
 # Set the entry point script as executable
-RUN chmod +x /perm.sh
+RUN chmod +x /entrypoint.sh
 
 # Expose the SSH port
 EXPOSE 22
@@ -27,7 +26,7 @@ EXPOSE 22
 # Switch to the root user to run entrypoint
 USER root
 
-WORKDIR /var/www/html
+WORKDIR /home/www-data
 
 # Set the entry point
-ENTRYPOINT ["/perm.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
